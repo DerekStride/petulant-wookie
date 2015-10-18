@@ -117,7 +117,7 @@ def size_irregularity(img, threshold):
 def process_image(img):
     modified = apply_filters(img)
     hole_check = check_holes(modified)
-    size_check = size_irregularity(modified, 15)
+    size_check = size_irregularity(modified, 9)
     print("Hole: " + str(hole_check) + "\nSize: " + str(size_check) + "\nFinal: " + str(size_check and hole_check) + "\n")
     return size_check and hole_check
 
@@ -126,7 +126,7 @@ def execute(fileQueue, in_path, out_path):
         photo = load_image(in_path + "/" + img)
         valid_img = process_image(photo)
 
-        csv = file(out_path + "/CSV/batch.csv", "w")
+        csv = file(out_path + "/CSV/batch.csv", "a")
         csv.write(os.path.splitext(img)[0] + "," + str(start_time))
 
         if valid_img:
