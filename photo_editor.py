@@ -4,7 +4,13 @@
 import sys  # get_image calls exit
 import filters
 import convolution_filter
+import gui
+import thread
+import datetime
 from Cimpl import *
+
+start_time = datetime.datetime.now().time()
+# filename = os.path.splitext(f)[0]
 
 def get_image():
     """
@@ -24,11 +30,111 @@ def get_image():
 
     return img
 
+def apply_filters(img):
+    dark_ratio = 0.4
+    light_ratio = 0.55
+    # background = load_image(gui.pathGUIBackground1)
+    # dark_background = load_image(gui.pathGUIBackground2)
+    background = load_image("background.bmp")
+    dark_background = load_image("dark_background.bmp")
+    modified = filters.backgound_detect(img, dark_background, dark_ratio)
+    image = filters.backgound_detect(modified, dark_background, light_ratio)
+    dest = convolution_filter.convolution_filter(image, "blur")
+    dest = convolution_filter.convolution_filter(dest, "blur")
+    dest1 = filters.black_and_white(dest, 25)
+    # save_as(dest1, "photos/tmp1.bmp")
+    return dest1
+
+def check_holes(img):
+    sequence = (0, 2, 4, 2, 0)
+    index = 0
+    for y in range(get_height(img)):
+        color_change = 0
+        for x in range(get_width(img) - 1):
+            color = get_color(img, x, y)
+            color_right = get_color(img, x+1, y)
+            if color != color_right:
+                color_change += 1
+        # If the color_change is as expected continue
+        if color_change == sequence[index]:
+            continue
+        # If you're at the end of the sequence, and there's another color
+        # change then quit
+        elif index + 1 == len(sequence):
+            if color_change > 0:
+                return False
+        # If there's a differece that matches the next part in the sequence
+        # move the index along
+        elif color_change == sequence[index+1]:
+            index += 1
+            continue
+        else:
+            return False
+    # You made it! The sequence is complete!
+    return True
+
+def _find_edge(img, direction):
+    if direction < 0:
+        start = get_width(img) - 1
+        end = 0
+        step = -1
+    else:
+        start = 0
+        end = get_width(img) - 1
+        step = 1
+
+    for x in range(start, end, step):
+        for y in range(get_height(img)):
+            color = get_color(img, x, y)
+            color_side = get_color(img, x+step, y)
+            if color != color_side:
+                return x
+    return -1
+
+def _count_col(img, x):
+    count = 0
+    switch = False
+    white = create_color(255, 255, 255)
+    for y in range(get_height(img)):
+        if get_color(img, x, y) == white:
+            count += 1
+    return count
+
+
+def size_irregularity(img, threshold):
+    left = _find_edge(img, 1)
+    right = _find_edge(img, -1)
+    while(right - left > 0):
+        left_count = _count_col(img, left)
+        right_count = _count_col(img, right)
+        if abs(left_count - right_count) > threshold:
+            return False
+        left += 1
+        right -= 1
+    return True
+
+
+def process_image(img):
+    modified = apply_filters(img)
+    hole_check = check_holes(modified)
+    size_check = size_irregularity(modified, 5)
+    print(str(hole_check))
+    print(str(size_check))
+    print(str(size_check and hole_check))
+    print("")
+    show(modified)
+
+def execute():
+    for img in gui.fileQueue:
+        process_image(load_image(img))
+        show(modified)
+
+
 
 if __name__ == "__main__":
 
-    background = load_image("photos/background.bmp")
-    dark_background = load_image("photos/dark_background.bmp")
+    background = load_image("background.bmp")
+    dark_background = load_image("dark_background.bmp")
 
     command = ""
     image = ""
@@ -53,45 +159,23 @@ if __name__ == "__main__":
         (0.4, 0.55)
     ]
 
-    dark_ratio = 0.4
-    light_ratio = 0.55
-    image = get_image()
+    images = ["photos/th_DSC_0200.bmp", "photos/th_DSC_0384.bmp", "photos/th_DSC_0391.bmp", "photos/edgehole.bmp"]
 
-    for dark, light in good_combos:
-        modified = filters.backgound_detect(image, dark_background, dark)
-        img = filters.backgound_detect(modified, dark_background, light)
-        dest = convolution_filter.convolution_filter(img, "blur")
-        dest = convolution_filter.convolution_filter(dest, "blur")
-        # show(dest)
-        dest1 = filters.black_and_white(dest, 25)
-        save_as(dest1, "photos/tmp1.bmp")
-        dest2 = filters.detect_edges_better(dest1, 128)
-        save_as(dest2, "photos/tmp2.bmp")
-        show(dest2)
+    # img = load_image(images[1])
+    # image = apply_filters(img)
+    #
+    # left = _find_edge(image, 1)
+    # right = _find_edge(image, -1)
+    #
+    # for y in range(get_height(img)):
+    #     set_color(image, left, y, create_color(255, 0, 0))
+    #     set_color(image, right, y, create_color(255, 0, 0))
 
-        command = raw_input("L)oad image \nE)dge detect\nC)onvolution\nB)lack n White\nQ)uit \n: ")
-        cmd = command in ["L", "Q", "E", "C", "B", "Y"]
+    # print left, right
 
-        if command == "Y":
-            print("Dark: " + str(dark) + " Light: " + str(light))
+    # show(image)
 
 
-        #
-        # if cmd == False:
-        #     print("No such command")
-        #     command = "Q"
-        # elif image == "" and command != "Q":
-        #     print("No Image Loaded")
-        #     command = "Q"
-        # elif command == "E":
-        #     threshold = float(raw_input("Threshold?: "))
-        #     filters.detect_edges_better(image, threshold)
-        #     show(image)
-        # elif command == "C":
-        #     dest = convolution_filter.convolution_filter(image, "blur")
-        #     show(dest)
-        # elif command == "B":
-        #     dest1 = filters.black_and_white(image, 60)
-        #     dest2 = filters.remove_noise(dest1, 9)
-        #     show(dest1)
-        #     show(dest2)
+
+    # for img in images:
+    #     process_image(load_image(img))
