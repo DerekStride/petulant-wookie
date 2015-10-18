@@ -117,17 +117,16 @@ def size_irregularity(img, threshold):
 def process_image(img):
     modified = apply_filters(img)
     hole_check = check_holes(modified)
-    size_check = size_irregularity(modified, 5)
-    print(str(hole_check))
-    print(str(size_check))
-    print(str(size_check and hole_check))
-    print("")
-    show(modified)
+    size_check = size_irregularity(modified, 7)
+    print("Hole: " + str(hole_check) + "\nSize: " + str(size_check) + "\nFinal: " + str(size_check and hole_check) + "\n")
+    return size_check and hole_check
 
 def execute():
+    print("Hello")
     for img in gui.fileQueue:
-        process_image(load_image(img))
-        show(modified)
+        valid_img = process_image(load_image(img))
+        print("Image: " + img + " is " + str(valid_img))
+
 
 
 
@@ -177,5 +176,5 @@ if __name__ == "__main__":
 
 
 
-    # for img in images:
-    #     process_image(load_image(img))
+    for img in images:
+        process_image(load_image(img))

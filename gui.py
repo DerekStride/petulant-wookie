@@ -53,15 +53,14 @@ def search_files():
     while (1):
         onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
         for f in onlyfiles:
-            extension = os.path.splitext(f)[1]
+            extention = os.path.splitext(f)[1]
             if f not in fileQueue and extention is ".bmp":
                 fileQueue.append(f)
 
 def start_proccess():
     global pathGUIInputDir
     global pathGUIOutputDir
-    if(pathGUIInputDir is not None and pathGUIOutputDir is not None
-        and pathGUIBackground1 is not None and pathGUIBackground2 is not None):
+    if(pathGUIInputDir is not None and pathGUIOutputDir is not None):
         print("hi")
         thread.start_new_thread(search_files)
         photo_editor.execute()
