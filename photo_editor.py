@@ -121,10 +121,11 @@ def process_image(img):
     print("Hole: " + str(hole_check) + "\nSize: " + str(size_check) + "\nFinal: " + str(size_check and hole_check) + "\n")
     return size_check and hole_check
 
-def execute():
+def execute(fileQueue, path):
     print("Hello")
-    for img in gui.fileQueue:
-        valid_img = process_image(load_image(img))
+    print(fileQueue)
+    for img in fileQueue:
+        valid_img = process_image(load_image(path + "/" + img))
         print("Image: " + img + " is " + str(valid_img))
 
 

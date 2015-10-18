@@ -15,7 +15,7 @@ from tkFileDialog import askdirectory
 from tkFileDialog import askopenfilename
 from os import listdir
 from os.path import isfile, join
-#import photo_editor
+import photo_editor
 import thread
 import os
 
@@ -62,20 +62,25 @@ def output_select():
 def search_files():
     global alive
     while (alive):
-        print("hi")
         onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
         for f in onlyfiles:
-            extention = os.path.splitext(f)[1]
-            if f not in fileQueue and extention is ".bmp":
+            # extention = os.path.splitext(f)[1]
+            if f not in fileQueue: #and extention is ".bmp":
                 fileQueue.append(f)
 
 def start_proccess():
+    global fileQueue
     global pathGUIInputDir
     global pathGUIOutputDir
     if(pathGUIInputDir is not None and pathGUIOutputDir is not None):
         print("hi")
-        thread.start_new_thread(search_files, ())
-        #photo_editor.execute()
+        onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
+        for f in onlyfiles:
+            extention = os.path.splitext(f)[1]
+            print extention
+            if f not in fileQueue and extention == ".bmp":
+                fileQueue.append(f)
+        photo_editor.execute(fileQueue, pathGUIInputDir)
 
 
 
