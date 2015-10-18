@@ -16,6 +16,7 @@ from tkFileDialog import askopenfilename
 from os import listdir
 from os.path import isfile, join
 import photo_editor
+import thread
 import os
 
 pathGUIInputDir = None
@@ -48,6 +49,13 @@ def output_select():
         os.makedirs(pathGUIOutputDir + "/Good")
     if not os.path.exists(pathGUIOutputDir + "/CSV"):
         os.makedirs(pathGUIOutputDir + "/CSV")
+def search_files():
+    while (1):
+        onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
+        for f in onlyfiles:
+            extension = os.path.splitext(f)[1]
+            if f not in fileQueue and extention is ".bmp":
+                fileQueue.append(f)
 
 def start_proccess():
     global pathGUIInputDir
@@ -55,11 +63,7 @@ def start_proccess():
     if(pathGUIInputDir is not None and pathGUIOutputDir is not None
         and pathGUIBackground1 is not None and pathGUIBackground2 is not None):
         print("hi")
-        onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
-        for f in onlyfiles:
-            extension = os.path.splitext(f)[1]
-            if f not in fileQueue and extention is ".bmp":
-                fileQueue.append(f)
+        thread.start_new_thread(search_files)
         photo_editor.execute()
 
 
