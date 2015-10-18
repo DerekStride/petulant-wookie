@@ -15,7 +15,7 @@ from tkFileDialog import askdirectory
 from tkFileDialog import askopenfilename
 from os import listdir
 from os.path import isfile, join
-import photo_editor
+#import photo_editor
 import thread
 import os
 
@@ -23,7 +23,17 @@ pathGUIInputDir = None
 pathGUIOutputDir = None
 pathGUIBackground1 = None
 pathGUIBackground2 = None
+windowGUITopLayer = None
+alive = True
 fileQueue = list()
+
+def on_closing():
+    global alive
+    global windowGUITopLayer
+    thread.exit_thread
+    alive = False
+    windowGUITopLayer.destroy()
+
 
 def background1_select():
     global pathGUIBackground1
@@ -50,7 +60,9 @@ def output_select():
     if not os.path.exists(pathGUIOutputDir + "/CSV"):
         os.makedirs(pathGUIOutputDir + "/CSV")
 def search_files():
-    while (1):
+    global alive
+    while (alive):
+        print("hi")
         onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
         for f in onlyfiles:
             extention = os.path.splitext(f)[1]
@@ -62,16 +74,18 @@ def start_proccess():
     global pathGUIOutputDir
     if(pathGUIInputDir is not None and pathGUIOutputDir is not None):
         print("hi")
-        thread.start_new_thread(search_files)
-        photo_editor.execute()
+        thread.start_new_thread(search_files, ())
+        #photo_editor.execute()
 
 
 
 def main():
     global pathGUIInputDir
     global pathGUIOutputDir
+    global windowGUITopLayer
 
     windowGUITopLayer = Tkinter.Tk()
+    windowGUITopLayer.protocol("WM_DELETE_WINDOW", on_closing)
     menuButtonGUISettings = Menubutton( windowGUITopLayer, text = "Settings", relief=RAISED)
     menuButtonGUISettings.grid()
     menuButtonGUISettings.menu = Menu (menuButtonGUISettings, tearoff = 0)
