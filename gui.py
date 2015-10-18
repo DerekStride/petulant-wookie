@@ -60,6 +60,7 @@ def start_proccess():
             extension = os.path.splitext(f)[1]
             if f not in fileQueue and extention is ".bmp":
                 fileQueue.append(f)
+        photo_editor.execute()
 
 
 
