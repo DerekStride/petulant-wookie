@@ -80,7 +80,7 @@ def start_proccess():
             print extention
             if f not in fileQueue and extention == ".bmp":
                 fileQueue.append(f)
-        photo_editor.execute(fileQueue, pathGUIInputDir)
+        photo_editor.execute(fileQueue, pathGUIInputDir, pathGUIOutputDir)
 
 
 

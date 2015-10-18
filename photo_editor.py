@@ -121,11 +121,23 @@ def process_image(img):
     print("Hole: " + str(hole_check) + "\nSize: " + str(size_check) + "\nFinal: " + str(size_check and hole_check) + "\n")
     return size_check and hole_check
 
-def execute(fileQueue, path):
-    print("Hello")
-    print(fileQueue)
+def execute(fileQueue, in_path, out_path):
     for img in fileQueue:
-        valid_img = process_image(load_image(path + "/" + img))
+        photo = load_image(in_path + "/" + img)
+        valid_img = process_image(photo)
+
+        csv = file(out_path + "/CSV/batch.csv", "w")
+        csv.write(os.path.splitext(img)[0] + "," + str(start_time))
+
+        if valid_img:
+            save_as(photo, out_path + "/Good/" + img)
+            csv.write(",G\n")
+        else:
+            save_as(photo, out_path + "/Bad/" + img)
+            csv.write(",D\n")
+
+
+
         print("Image: " + img + " is " + str(valid_img))
 
 
