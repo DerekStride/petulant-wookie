@@ -32,34 +32,42 @@ if __name__ == "__main__":
 
     command = ""
     image = ""
-    dark_ratio = 0
-    light_ratio = 0
+    combos = [
+        (0.15, 0.7),
+        (0.15, 0.7),
+        (0.2, 0.7),
+        (0.25, 0.65),
+        (0.3, 0.6),
+        (0.35, 0.55),
+        (0.4, 0.5),
+        (0.4, 0.55),
+        (0.45, 0.45),
+        (0.45, 0.5),
+        (0.5, 0.45),
+        (0.55, 0.35),
+        (0.55, 0.4)
+    ]
+    dark_ratio = 0.1
+    light_ratio = 0.5
     image = get_image()
 
-    while command != "Q":
+    for dark, light in combos:
+        modified = filters.backgound_detect(image, dark_background, dark)
+        img = filters.backgound_detect(modified, dark_background, light)
+        dest = convolution_filter.convolution_filter(img, "blur")
+        dest = convolution_filter.convolution_filter(dest, "blur")
+        # show(dest)
+        dest1 = filters.black_and_white(dest, 25)
+        save_as(dest1, "photos/tmp1.bmp")
+        dest2 = filters.detect_edges_better(dest1, 128)
+        save_as(dest2, "photos/tmp2.bmp")
+        show(dest2)
 
-        while (dark_ratio != 1.0):
-            while (light_ratio != 1.0):
+        command = raw_input("L)oad image \nE)dge detect\nC)onvolution\nB)lack n White\nQ)uit \n: ")
+        cmd = command in ["L", "Q", "E", "C", "B", "Y"]
 
-                modified = filters.backgound_detect(image, dark_background, dark_ratio)
-                img = filters.backgound_detect(modified, dark_background, light_ratio)
-                dest = convolution_filter.convolution_filter(img, "blur")
-                dest = convolution_filter.convolution_filter(dest, "blur")
-                # show(dest)
-                dest1 = filters.black_and_white(dest, 25)
-                save_as(dest1, "photos/tmp1.bmp")
-                dest2 = filters.detect_edges_better(dest1, 128)
-                save_as(dest2, "photos/tmp2.bmp")
-                show(dest2)
-
-                command = raw_input("L)oad image \nE)dge detect\nC)onvolution\nB)lack n White\nQ)uit \n: ")
-                cmd = command in ["L", "Q", "E", "C", "B", "Y"]
-
-                if command == "Y":
-                    print("Dark: " + dark_ratio + " Light: " + light_ratio)
-
-                light_ratio += 0.5
-            dark_ratio += 0.5
+        if command == "Y":
+            print("Dark: " + str(dark) + " Light: " + str(light))
 
 
         #
