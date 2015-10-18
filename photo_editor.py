@@ -47,11 +47,17 @@ if __name__ == "__main__":
         (0.55, 0.35),
         (0.55, 0.4)
     ]
-    dark_ratio = 0.1
-    light_ratio = 0.5
+
+    good_combos = [
+        (0.4, 0.5),
+        (0.4, 0.55)
+    ]
+
+    dark_ratio = 0.4
+    light_ratio = 0.55
     image = get_image()
 
-    for dark, light in combos:
+    for dark, light in good_combos:
         modified = filters.backgound_detect(image, dark_background, dark)
         img = filters.backgound_detect(modified, dark_background, light)
         dest = convolution_filter.convolution_filter(img, "blur")
