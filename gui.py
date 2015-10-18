@@ -12,13 +12,26 @@ from Tkinter import*
 import tkMessageBox
 import Tkinter
 from tkFileDialog import askdirectory
+from tkFileDialog import askopenfilename
 from os import listdir
 from os.path import isfile, join
+import photo_editor
 import os
 
 pathGUIInputDir = None
 pathGUIOutputDir = None
+pathGUIBackground1 = None
+pathGUIBackground2 = None
 fileQueue = list()
+
+def background1_select():
+    global pathGUIBackground1
+    pathGUIBackground1 = askopenfilename()
+
+def background2_select():
+    global pathGUIBackground2
+    pathGUIBackground2 = askopenfilename()
+
 
 def input_select():
     global pathGUIInputDir
@@ -39,7 +52,8 @@ def output_select():
 def start_proccess():
     global pathGUIInputDir
     global pathGUIOutputDir
-    if(pathGUIInputDir is not None and pathGUIOutputDir is not None):
+    if(pathGUIInputDir is not None and pathGUIOutputDir is not None
+        and pathGUIBackground1 is not None and pathGUIBackground2 is not None):
         print("hi")
         onlyfiles = [ f for f in listdir(pathGUIInputDir) if isfile(join(pathGUIInputDir,f)) ]
         for f in onlyfiles:
@@ -64,6 +78,12 @@ def main():
 
     menuButtonGUISettings.menu.add_command (label = "Output Location",
                                          command = output_select)
+
+    menuButtonGUISettings.menu.add_command (label = "background1",
+                                         command = background1_select)
+
+    menuButtonGUISettings.menu.add_command (label = "background2",
+                                         command = background2_select)
     menuButtonGUISettings.pack()
 
     buttonGUIStart = Tkinter.Button(windowGUITopLayer, text = "Start",
