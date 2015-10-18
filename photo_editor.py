@@ -117,7 +117,7 @@ def size_irregularity(img, threshold):
 def process_image(img):
     modified = apply_filters(img)
     hole_check = check_holes(modified)
-    size_check = size_irregularity(modified, 7)
+    size_check = size_irregularity(modified, 15)
     print("Hole: " + str(hole_check) + "\nSize: " + str(size_check) + "\nFinal: " + str(size_check and hole_check) + "\n")
     return size_check and hole_check
 
